@@ -7,7 +7,10 @@ require('dotenv').config();
 const productRoutes = require('./routes/productRoutes');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://samarmern.netlify.app' // Replace with your Netlify URL
+}));
+
 app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
