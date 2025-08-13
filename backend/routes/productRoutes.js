@@ -163,5 +163,23 @@ router.get('/:id/history', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch history' });
   }
 });
+// DELETE /api/products/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Optional: also delete related history logs
+    await InventoryHistory.deleteMany({ productId: id });
+
+    const deleted = await Product.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ message: 'Product not found' });
+
+    res.json({ message: 'Product deleted', id });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Delete failed' });
+  }
+});
+
 
 module.exports = router;

@@ -1,28 +1,17 @@
 import React from 'react';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 
-export default function SearchBar({ name, setName, category, setCategory, onAdd }) {
+export default function SearchBar({ name, setName, category, setCategory }) {
   return (
-    <Form className="mb-3">
-      <Row className="align-items-end">
-        <Col md={4}>
+    <Form>
+      <Row className="g-3 align-items-end">
+        <Col md={6}>
           <Form.Label>Search by name</Form.Label>
-          <Form.Control
-            placeholder="e.g. Apple"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <Form.Control className="input-soft" value={name} placeholder="e.g., Apple" onChange={(e) => setName(e.target.value)} />
         </Col>
-        <Col md={4}>
+        <Col md={6}>
           <Form.Label>Filter by category</Form.Label>
-          <Form.Control
-            placeholder="e.g. Fruits"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-        </Col>
-        <Col md={4} className="text-md-end mt-3 mt-md-0">
-          <Button variant="primary" onClick={onAdd}>Add New Product</Button>
+          <Form.Control className="input-soft" value={category} placeholder="e.g., Fruits" onChange={(e) => setCategory(e.target.value)} />
         </Col>
       </Row>
     </Form>

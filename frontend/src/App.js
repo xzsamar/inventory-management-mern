@@ -9,83 +9,67 @@ import HistorySidebar from './components/HistorySidebar';
 function App() {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
-  const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+  const [products, setProducts] = useState([]); // always start with array
   const [showHistory, setShowHistory] = useState(false);
   const [historyProduct, setHistoryProduct] = useState(null);
 
-  const fetchProducts = async (page = 1) => {
-    const res = await api.get('/products', {
-      params: {
-        name: name || undefined,
-        category: category || undefined,
-        page,
-        limit: pagination.limit
-      }
-    });
-    setData(res.data.data);
-    setPagination(prev => ({ ...prev, page, pages: res.data.pagination.pages || 1 }));
-  };
-
-  useEffect(() => {
-    fetchProducts(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, category]);
-
-  const onAdd = async () => {
-    // Quick add an empty product with default name — you can enhance with a modal form
-    const tempName = prompt('Enter product name');
-    if (!tempName) return;
+  const fetchProducts = async () => {
     try {
-      await api.post('/products/import', new FormData()); // no-op to keep endpoint list minimal
-    } catch {}
-    // Minimal create: reuse update flow by creating via import is not ideal; for speed, add a basic POST route later if needed.
-    alert('For this test, please add via CSV import or create a small POST route if required.');
-  };
+      const res = await api.get('/products', { params: { name, category } });
 
-  const onImported = (dups) => {
-    fetchProducts(pagination.page);
-    if (dups?.length) {
-      console.log('Duplicates:', dups);
+      // Handle both array and pagination object
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else if (res.data && Array.isArray(res.data.data)) {
+        setProducts(res.data.data);
+      } else {
+        setProducts([]);
+      }
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setProducts([]);
     }
   };
 
-  const onSelectHistory = (p) => {
-    setHistoryProduct(p);
-    setShowHistory(true);
-  };
+  useEffect(() => {
+    fetchProducts();
+  }, [name, category]);
 
   return (
     <>
-      <Navbar bg="light" className="mb-3">
+      <Navbar bg="white" className="mb-4 border-bottom">
         <Container>
-          <Navbar.Brand>Inventory Management</Navbar.Brand>
-          <div className="ms-auto">
-            <ImportExportButtons onImported={onImported} />
-          </div>
+          <Navbar.Brand style={{ color: 'var(--brand)' }}>Inventory Manager</Navbar.Brand>
+          <ImportExportButtons onImported={fetchProducts} />
         </Container>
       </Navbar>
 
       <Container>
-        <Row>
-          <Col>
-            <SearchBar
-              name={name}
-              setName={setName}
-              category={category}
-              setCategory={setCategory}
-              onAdd={onAdd}
-            />
-          </Col>
-        </Row>
+        <div className="card p-3 mb-3">
+          <SearchBar
+            name={name}
+            setName={setName}
+            category={category}
+            setCategory={setCategory}
+          />
+        </div>
 
         <Row>
           <Col>
-            <ProductTable
-              products={data}
-              setProducts={(list) => setData(list)}
-              onSelectHistory={onSelectHistory}
-            />
+            {products.length > 0 ? (
+              <ProductTable
+                products={products}
+                setProducts={setProducts}
+                onSelectHistory={(p) => {
+                  setHistoryProduct(p);
+                  setShowHistory(true);
+                }}
+              />
+            ) : (
+              <div className="text-center py-5 text-muted">
+                No products found. Import a CSV to get started.
+              </div>
+            )}
           </Col>
         </Row>
       </Container>
