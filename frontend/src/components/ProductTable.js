@@ -144,7 +144,7 @@ export default function ProductTable({ products, setProducts, onSelectHistory })
               )}
             </td>
 
-            <td className="text-end" style={{ width: 240 }}>
+            <td className="text-end" style={{ width: 320, whitespace: 'nowrap'}}>
               {editId === p._id ? (
                 <>
                   <Button
@@ -183,6 +183,7 @@ export default function ProductTable({ products, setProducts, onSelectHistory })
                   <Button
                     size="sm"
                     variant="danger"
+                    classname="me-2"
                     onClick={() => remove(p._id)}
                   >
                     Delete

@@ -32,7 +32,7 @@ function App() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    
   }, [name, category]);
 
   return (
